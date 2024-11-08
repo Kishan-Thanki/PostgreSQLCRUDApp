@@ -1,6 +1,7 @@
 package Controllers;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,7 @@ private DatabaseManager dbManager;
             	
             	MigrantsList.add(new Migrants(rs.getInt("migrants_id"),rs.getInt("birthplace_id"),
             			rs.getString("first_name"),rs.getString("middle_name"),rs.getString("last_name"),
-            			rs.getString("birthdate"),rs.getString("contact_no"),rs.getString("email"),
+            			rs.getDate("birthdate"),rs.getString("contact_no"),rs.getString("email"),
             			rs.getString("gender"),rs.getBoolean("is_married")));
             	
             	
@@ -45,32 +46,36 @@ private DatabaseManager dbManager;
     }
     
     // Insert Migrants
-    public void insertMigrant(int birthplace_id, String first_name, String middle_name, String last_name,
-    		String birthdate,String contact_no, String email, String gender, boolean is_married) {
+    public int insertMigrant(int birthplace_id, String first_name, String middle_name, String last_name,
+    		Date birthdate,String contact_no, String email, String gender, boolean is_married) {
     	
         String insertSQL = "INSERT INTO migrants (birthplace_id, first_name, middle_name,last_name,birthdate,"
-        		+ "birthdate,contact_no,email,gender,is_married) VALUES (?, ?, ?)";
+        		+ "contact_no,email,gender,is_married) VALUES (?, ?, ?,?,?,?,?,?,?)";
         try (Connection connection = dbManager.connect();
              PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
         	pstmt.setInt(1, birthplace_id);
         	pstmt.setString(2, first_name);
         	pstmt.setString(3, middle_name);
         	pstmt.setString(4, last_name);
-        	pstmt.setString(5, birthdate);
+        	pstmt.setDate(5, birthdate);
         	pstmt.setString(6, contact_no);
         	pstmt.setString(7, email);
         	pstmt.setString(8, gender);
         	pstmt.setBoolean(9, is_married); 
-            pstmt.executeUpdate();
+            int result =pstmt.executeUpdate();
+            
+            return result;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
+        return 0;
     }
     
     
     // Update Migrants
     public void updateMigrant(int migrants_id,int birthplace_id, String first_name, String middle_name, String last_name,
-    		String birthdate,String contact_no, String email, String gender, boolean is_married) {
+    		Date birthdate,String contact_no, String email, String gender, boolean is_married) {
     	
         String updateSQL = "UPDATE migrants SET birthplace_id = ?, first_name = ?, middle_name = ?, last_name = ? "
         		+ ",birthdate = ?, contact_no = ? , email = ?, gender = ?, is_married = ? WHERE migrants_id = ?";
@@ -80,7 +85,7 @@ private DatabaseManager dbManager;
         	pstmt.setString(2, first_name);
         	pstmt.setString(3, middle_name);
         	pstmt.setString(4, last_name);
-        	pstmt.setString(5, birthdate);
+        	pstmt.setDate(5, birthdate);
         	pstmt.setString(6, contact_no);
         	pstmt.setString(7, email);
         	pstmt.setString(8, gender);

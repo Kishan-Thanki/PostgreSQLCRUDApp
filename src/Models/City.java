@@ -10,6 +10,12 @@ public class City {
 		this.pincode = pincode;
 		this.state_id=state_id;
 	}
+	
+	public City(int city_id,String name,int state_id) {
+		this.city_id = city_id;
+		this.state_id= state_id;
+		this.name = name;
+	}
 	public int getCity_id() {
 		return city_id;
 	}

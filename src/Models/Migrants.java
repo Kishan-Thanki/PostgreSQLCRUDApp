@@ -1,11 +1,14 @@
 package Models;
 
+import java.sql.Date;
+
 public class Migrants {
 	private int migrants_id,birthplace_id;
-	private String first_name,middle_name,last_name,birthdate,contact_no,email,gender;
+	private String first_name,middle_name,last_name,contact_no,email,gender;
 	private boolean is_married;
+	private Date birthdate;
 	
-	public Migrants(int migrants_id,int birthplace_id, String first_name, String middle_name, String last_name, String birthdate,
+	public Migrants(int migrants_id,int birthplace_id, String first_name, String middle_name, String last_name, Date birthdate,
 			String contact_no, String email, String gender, boolean is_married) {
 		super();
 		this.migrants_id = migrants_id;
@@ -49,10 +52,10 @@ public class Migrants {
 	public void setLast_name(String last_name) {
 		this.last_name = last_name;
 	}
-	public String getBirthdate() {
+	public Date getBirthdate() {
 		return birthdate;
 	}
-	public void setBirthdate(String birthdate) {
+	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
 	public String getContact_no() {

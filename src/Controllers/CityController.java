@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Database.DatabaseManager;
 import Models.City; 
@@ -33,6 +35,31 @@ private DatabaseManager dbManager;
             }
             
             return cityList;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+   
+    
+    // Read City According State
+    public City getCityById(int city_id) {
+  
+        String selectSQL = "SELECT * FROM city where city_id = ?";
+        try {
+        	Connection connection = dbManager.connect();
+            PreparedStatement pstmt = connection.prepareStatement(selectSQL);
+            pstmt.setInt(1, city_id);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            int id = rs.getInt("city_id");
+            String name = rs.getString("name");
+            int state_id = rs.getInt("state_id");
+            City city = new City(id, name,state_id); 
+
+            return city;
             
         } catch (SQLException e) {
             e.printStackTrace();

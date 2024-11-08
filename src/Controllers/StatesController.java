@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StatesController {
 	
@@ -17,20 +19,19 @@ public class StatesController {
 	}
 
     // Read States
-    public List<State> readStates() {
-    	List<State> statelist=new ArrayList<>();
-  
+    public Map<String, Integer> readStates() { 
+    	 Map<String, Integer> states = new HashMap<>();
         String selectSQL = "SELECT * FROM state";
         try {
         	Connection connection = dbManager.connect();
             PreparedStatement pstmt = connection.prepareStatement(selectSQL);
             ResultSet rs=pstmt.executeQuery();
+            
             while(rs.next()) {
-            	statelist.add(new State(rs.getInt("state_id"), rs.getLong("population"),
-            			rs.getString("name"),rs.getFloat("literacy_rate")));
+            	states.put(rs.getString("name"), rs.getInt("state_id")); 
             }
             
-            return statelist;
+            return states;
             
         } catch (SQLException e) {
             e.printStackTrace();
