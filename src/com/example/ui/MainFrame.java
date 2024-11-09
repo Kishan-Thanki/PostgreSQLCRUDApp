@@ -237,6 +237,14 @@ public class MainFrame extends JFrame {
         btnUpdate.setBounds(250, 547, 85, 21);
         contentPane.add(btnUpdate);
         
+        // Other existing buttons like Add, Update, etc.
+
+        JButton btnNext = new JButton("Next");
+        btnNext.setForeground(Color.BLACK);
+        btnNext.setBackground(Color.WHITE);
+        btnNext.setBounds(833, 547, 85, 21);  // Positioning it after the "Clear" button
+        contentPane.add(btnNext);
+        
         JButton btnDelete = new JButton("Delete");
         btnDelete.setForeground(Color.BLACK);
         btnDelete.setBackground(Color.WHITE);
@@ -330,10 +338,19 @@ public class MainFrame extends JFrame {
 			        
 			        Boolean is_married;
 			        is_married = rdbtnMarried.isSelected() ? true : false;
+			        
+			        String middle_name = textField_2.getText().toString();
+			        middle_name = middle_name.isEmpty() ? null : middle_name;
+			        
+			        String contact_no = textField_4.getText().toString();
+			        contact_no = contact_no.isEmpty() ? null : contact_no;
+			        
+			        String email = textField_5.getText().toString();
+			        email = email.isEmpty() ? null : email;
 			        	
 			        
-					int row=migrants.insertMigrant(selectedCityId,textField_1.getText(),textField_2.getText(), textField_3.getText(),
-							sqlDate, textField_4.getName(), textField_5.getText(), gen,is_married);
+					int row=migrants.insertMigrant(selectedCityId,textField_1.getText(),middle_name, textField_3.getText(),
+							sqlDate, contact_no,email, gen,is_married);
 					
 					if(row>0) {
 						LoadData(migrants);
@@ -347,6 +364,15 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
+        
+        // Add an action listener to open the new GUI frame
+        btnNext.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Open the new GUI
+                CityFrame cityFrame = new CityFrame(); 
+                cityFrame.setVisible(true);
+            }
+        });
         
         // Button action listener for "Clear"
         btnClear.addActionListener(new ActionListener() {
@@ -380,16 +406,21 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selectedRow = migrantTable.getSelectedRow();
-				int migrant_id= Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
-				int row = migrants.deleteMigrant(migrant_id);
-				
-				if(row>0) {
-					LoadData(migrants);
-					JOptionPane.showMessageDialog(MainFrame.this, "Data Deleted Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-				}
+				if(selectedRow == -1)
+					JOptionPane.showMessageDialog(MainFrame.this, "Please Select Row first", "Error", JOptionPane.ERROR_MESSAGE);
 				else {
-					JOptionPane.showMessageDialog(MainFrame.this, "Something Went wrong", "Error", JOptionPane.ERROR_MESSAGE);
+					int migrant_id= Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+					int row = migrants.deleteMigrant(migrant_id);
+					
+					if(row>0) {
+						LoadData(migrants);
+						JOptionPane.showMessageDialog(MainFrame.this, "Data Deleted Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(MainFrame.this, "Can't Delete this Migrant", "Error", JOptionPane.ERROR_MESSAGE);
+					}
 				}
+				
 			}
 		});
         
@@ -469,39 +500,52 @@ public class MainFrame extends JFrame {
 				boolean validate=validateForm(textField_1, textField_3, rdbtnNewRadioButton, rdbtnFemale, rdbtnMarried, rdbtnSingle,stateComboBox,
 						cityComboBox);
 				if(validate) {
-					int migrant_id= Integer.parseInt(textField.getText().toString());
-					String selectedCityName = (String) cityComboBox.getSelectedItem();
-					int selectedCityId=0;
-					for (Map.Entry<Integer, City> entry : stateCityMap.entrySet()) {
-					    if (entry.getValue().getName().equals(selectedCityName)) {
-					        selectedCityId = entry.getKey();
-					        // Use the selectedCityId for data insertion
-					        break;
-					    }
-					}
-				
-					
-			        Date selectedDate = calendar.getDate(); 
-			        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
-			        String gen="";
-			        gen = rdbtnNewRadioButton.isSelected() ?  "M" : "F";
-			        
-			        Boolean is_married;
-			        is_married = rdbtnMarried.isSelected() ? true : false;
-			        	
-			        
-					int row=migrants.updateMigrant(migrant_id,selectedCityId,textField_1.getText(),textField_2.getText(), textField_3.getText(),
-							sqlDate, textField_4.getName(), textField_5.getText(), gen,is_married);
-					
-					if(row>0) {
-						LoadData(migrants);
-						JOptionPane.showMessageDialog(MainFrame.this, "Data Updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-					}
+					String migrant_id= textField.getText().toString();
+					if(migrant_id == "")
+						JOptionPane.showMessageDialog(MainFrame.this, "Please Select Data", "Error", JOptionPane.ERROR_MESSAGE);
 					else {
-						JOptionPane.showMessageDialog(MainFrame.this, "Something Went wrong", "Error", JOptionPane.ERROR_MESSAGE);
+						String selectedCityName = (String) cityComboBox.getSelectedItem();
+						int selectedCityId=0;
+						for (Map.Entry<Integer, City> entry : stateCityMap.entrySet()) {
+						    if (entry.getValue().getName().equals(selectedCityName)) {
+						        selectedCityId = entry.getKey();
+						        // Use the selectedCityId for data insertion
+						        break;
+						    }
+						}
+					
+						
+				        Date selectedDate = calendar.getDate(); 
+				        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+				        String gen="";
+				        gen = rdbtnNewRadioButton.isSelected() ?  "M" : "F";
+				        
+				        Boolean is_married;
+				        is_married = rdbtnMarried.isSelected() ? true : false;
+				        	
+				        String middle_name = textField_2.getText().toString();
+				        middle_name = middle_name.isEmpty() ? null : middle_name;
+				        
+				        String contact_no = textField_4.getText().toString();
+				        contact_no = contact_no.isEmpty() ? null : contact_no;
+				        
+				        String email = textField_5.getText().toString();
+				        email = email.isEmpty() ? null : email;
+				        
+						int row=migrants.updateMigrant(Integer.parseInt(migrant_id),selectedCityId,textField_1.getText(),middle_name, textField_3.getText(),
+								sqlDate, contact_no, email, gen,is_married);
+						
+						if(row>0) {
+							LoadData(migrants);
+							JOptionPane.showMessageDialog(MainFrame.this, "Data Updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+						}
+						else {
+							JOptionPane.showMessageDialog(MainFrame.this, "Something Went wrong", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+							
+
 					}
-						
-						
+											
 				}
 			
 			}
