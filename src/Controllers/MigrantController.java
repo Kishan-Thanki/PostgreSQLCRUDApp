@@ -74,7 +74,7 @@ private DatabaseManager dbManager;
     
     
     // Update Migrants
-    public void updateMigrant(int migrants_id,int birthplace_id, String first_name, String middle_name, String last_name,
+    public int updateMigrant(int migrants_id,int birthplace_id, String first_name, String middle_name, String last_name,
     		Date birthdate,String contact_no, String email, String gender, boolean is_married) {
     	
         String updateSQL = "UPDATE migrants SET birthplace_id = ?, first_name = ?, middle_name = ?, last_name = ? "
@@ -91,21 +91,25 @@ private DatabaseManager dbManager;
         	pstmt.setString(8, gender);
         	pstmt.setBoolean(9, is_married); 
         	pstmt.setInt(10, migrants_id);
-            pstmt.executeUpdate();
+            int row= pstmt.executeUpdate();
+            return row;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return 0;
     }
     
     // Delete Migrants
-    public void deleteMigrant(int Migrants_id) {
+    public int deleteMigrant(int Migrants_id) {
         String deleteSQL = "DELETE FROM migrants WHERE migrants_id = ?";
         try (Connection connection = dbManager.connect();
              PreparedStatement pstmt = connection.prepareStatement(deleteSQL)) {
             pstmt.setInt(1, Migrants_id);
-            pstmt.executeUpdate();
+            int row = pstmt.executeUpdate();
+            return row;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return 0;
     }
 }

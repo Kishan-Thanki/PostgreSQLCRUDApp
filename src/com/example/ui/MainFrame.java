@@ -76,7 +76,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         // Set default close operation and window size
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(10, 10, 1000, 750);  // Window size (width x height)
+        setBounds(10, 10, 1000, 800);  // Window size (width x height)
 
         // Initialize content panel with empty border
         contentPane = new JPanel();
@@ -348,7 +348,7 @@ public class MainFrame extends JFrame {
 			}
 		});
         
-        // Button action listener for "Add"
+        // Button action listener for "Clear"
         btnClear.addActionListener(new ActionListener() {
 			
 			@Override
@@ -373,6 +373,25 @@ public class MainFrame extends JFrame {
                 LoadData(migrants);
             }
         });
+        
+        //Button action listener for "Delete"
+        btnDelete.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int selectedRow = migrantTable.getSelectedRow();
+				int migrant_id= Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+				int row = migrants.deleteMigrant(migrant_id);
+				
+				if(row>0) {
+					LoadData(migrants);
+					JOptionPane.showMessageDialog(MainFrame.this, "Data Deleted Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else {
+					JOptionPane.showMessageDialog(MainFrame.this, "Something Went wrong", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
         
         
         // Add action listener for table row selection to prefill form fields
@@ -439,7 +458,61 @@ public class MainFrame extends JFrame {
         	 }
         });
         
+        
+        // Button action listener for "Update"
+        
+        btnUpdate.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				boolean validate=validateForm(textField_1, textField_3, rdbtnNewRadioButton, rdbtnFemale, rdbtnMarried, rdbtnSingle,stateComboBox,
+						cityComboBox);
+				if(validate) {
+					int migrant_id= Integer.parseInt(textField.getText().toString());
+					String selectedCityName = (String) cityComboBox.getSelectedItem();
+					int selectedCityId=0;
+					for (Map.Entry<Integer, City> entry : stateCityMap.entrySet()) {
+					    if (entry.getValue().getName().equals(selectedCityName)) {
+					        selectedCityId = entry.getKey();
+					        // Use the selectedCityId for data insertion
+					        break;
+					    }
+					}
+				
+					
+			        Date selectedDate = calendar.getDate(); 
+			        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+			        String gen="";
+			        gen = rdbtnNewRadioButton.isSelected() ?  "M" : "F";
+			        
+			        Boolean is_married;
+			        is_married = rdbtnMarried.isSelected() ? true : false;
+			        	
+			        
+					int row=migrants.updateMigrant(migrant_id,selectedCityId,textField_1.getText(),textField_2.getText(), textField_3.getText(),
+							sqlDate, textField_4.getName(), textField_5.getText(), gen,is_married);
+					
+					if(row>0) {
+						LoadData(migrants);
+						JOptionPane.showMessageDialog(MainFrame.this, "Data Updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(MainFrame.this, "Something Went wrong", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+						
+						
+				}
+			
+			}
+		});
+        
     }
+    
+    
+    
+
+    
     
     public void LoadData(MigrantController migrants) {
     	// Get the migrant data from the database
